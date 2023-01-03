@@ -21,7 +21,7 @@ The following data is being listed in a `csv` spreadsheet:
 - referred url (which is `target_url`)
 - domain of referred url
 
-## Usability
+## Adaptability
 Generally, the bot can easily be modified for other searches. For that, the search keyword or phrase as well as the start hub aggregator can be exchanged for your desired aim. 
 
 ## Get started
