@@ -9,16 +9,16 @@ It is useful if you are looking to buy, rent or sell a garage or if you want to 
 Furthermore, it can be used as a lead aggregator in case such information may be of interest for your business.  
 
 ## Procedure and setup
-The bot is designed for going through subpages of the agencies where it can expect offers or descriptions of the real estate agencies portfolio.  
+The bot is designed for going through subpages of the agencies where it can expect the offers or descriptions of the real estate agencies portfolio.
 It is then looking for the keyword `garage` mentioned in these sites. 
 
 ## Result
 The essential information you get is the `target_url` entries as here is where the `garage` keyword was found.  
 
-The following data is being summarized into a `csv` spreadsheet:
+The following data is being listed in a `csv` spreadsheet:
 - crawling depth
 - referer url
-- referred url (`target_url`)
+- referred url (which is `target_url`)
 - domain of referred url
 
 ## Usability
