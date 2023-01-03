@@ -8,7 +8,7 @@ Find real estate agencies which offer garages within their portfolio or actual o
 It is useful if you are looking to buy, rent or sell a garage or if you want to find a housing offer which includes a garage.
 Furthermore, it can be used as a lead aggregator in case such information may be of interest for your business.  
 
-## Procedure and setup
+## Setup
 The bot is designed for going through subpages of the agencies where it can expect the offers or descriptions of the real estate agencies portfolio.
 It is then looking for the keyword `garage` mentioned in these sites. 
 
