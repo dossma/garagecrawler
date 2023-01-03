@@ -1,5 +1,5 @@
 # garagecrawler
-Bot which searches real estate websites for garage mentions.
+Bot which searches real estate websites for mentions of "garage".
 
 It uses a real estate agency network as a starting ground for searching approximately 200 real estate agencies in the Berlin-Brandenburg area of Germany.
 
