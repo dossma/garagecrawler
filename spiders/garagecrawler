@@ -1,0 +1,80 @@
+# -*- coding: utf-8 -*-
+# import scrapy.exceptions
+from scrapy.spiders import CrawlSpider
+from scrapy.spiders import Rule
+from scrapy import Request as Request
+from scrapy.linkextractors import LinkExtractor as sle
+from garagecrawler.items import GaragecrawlerItem
+# from items import GaragecrawlerItem
+import logging
+import datetime
+from tldextract import extract
+
+# --- Eingabeparameter ---
+depth = 2
+download_delay = 8
+log_level = logging.INFO
+LOG_LEVEL = 'INFO'
+
+# --- CRAWL-KEYWORDS-SETUP ---
+search_keyw = '(?:)' + '.+garage.+'  # Suchwort in HTML body
+allw_keyw = [".+angebot.+", ".+gewerb.+", "expose?é", "liegenschaft", ".+garage.+", "verk[aä]uf", "best[aä]nd"]  # Wörter in URL, die einzuschliessen sind
+dny_keyw = [".*\.berlin\.de.*",  # Wörter in URL, die die Spinne nicht verarbreiten soll
+            'stellenangebote',
+            "immobilienscout24", "immonet", "immowelt",
+            'facebook', 'twitter', 'instagram', 'pinterest', 'linkedin', 'youtube', 'google', 'flickr', 'xing'
+            ]
+# --- CRAWL-KEYWORDS-SETUP-ENDE---
+allw_gen = ["(?:)" + i for i in allw_keyw]  # Assemblierung mit (?:) um Gross/Kleinschreibung ignorieren
+dny_gen = ["(?:)" + i for i in dny_keyw]  # Assemblierung mit (?:) um Gross/Kleinschreibung ignorieren
+
+
+class GaragecrawlSpider(CrawlSpider):
+    name = 'garagecrawl'
+    start_urls = ["https://www.vdiv-bb.de/mitglieder/index.html"]
+    start_domain = extract(start_urls[0]).registered_domain
+    allowed_domains = []
+
+    custom_settings = {
+        'DEPTH_LIMIT': depth,
+        'DOWNLOAD_DELAY': download_delay,
+        'LOG_LEVEL': LOG_LEVEL,
+        'FEEDS': {'%s-result.csv' % name: {'format': 'csv', }},
+    }
+
+    timelog = f"{datetime.datetime.now():%d-%m-%Y %H°%M}"
+    logging.basicConfig(  # Log-Einstellungen festlegen
+        filename='log-%s-%s.txt' % (timelog, name),
+        format='%(levelname)s: %(message)s',
+        level=log_level  # DEBUG oder INFO für mehr Infos
+    )
+    
+    rules = [
+        Rule(sle(allow=allw_gen, deny=dny_gen, deny_domains=start_domain, restrict_text=None), callback="parse_item", follow=False),
+    ]
+    
+    def start_requests(self):  # Überschreiben Scrapy-inhärente Funktion
+        for start_url in self.start_urls:
+            yield Request(url=start_url, callback=self.parse_start_links, dont_filter=True)
+
+    def parse_start_links(self, response):  # Manuelle Funktion
+        links_collect = sle(allow=(), deny=dny_gen, deny_domains=self.start_domain)  # Erste Links aus der Start-URL extrahieren
+        links = links_collect.extract_links(response)  # Erste Links aus der Start-URL extrahieren
+        for link in links:
+            yield Request(url=link.url)
+
+    def parse_item(self, response):
+        logging.info("Parsing url:" + response.url)
+        reg_term = response.selector.re(search_keyw)  # garage-schlagwort extrahieren
+        if reg_term:
+            logging.info("-- Garage-keyword found! -- URL \"%s\" is saved as target_url in export file" % response.url)
+            item = GaragecrawlerItem()
+            item['depth'] = response.meta['depth']
+            item['target_url'] = response.url  # Url der gescrapten Seite
+            item['domain'] = extract(response.url).registered_domain
+            ref = response.request.headers.get('Referer')  # Quell-Link, der auf target_url verweist
+            if ref is not None:  # Fehlermeldung durch decode.Operator wenn 'None'
+                item['referer_url'] = ref.decode("utf-8")
+
+            return item
+        
