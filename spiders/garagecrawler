@@ -25,8 +25,8 @@ dny_keyw = [".*\.berlin\.de.*",  # Wörter in URL, die die Spinne nicht verarbre
             'facebook', 'twitter', 'instagram', 'pinterest', 'linkedin', 'youtube', 'google', 'flickr', 'xing'
             ]
 # --- CRAWL-KEYWORDS-SETUP-ENDE---
-allw_gen = ["(?:)" + i for i in allw_keyw]  # Assemblierung mit (?:) um Gross/Kleinschreibung ignorieren
-dny_gen = ["(?:)" + i for i in dny_keyw]  # Assemblierung mit (?:) um Gross/Kleinschreibung ignorieren
+allw_gen = ["(?i)" + i for i in allw_keyw]  # Assemblierung mit (?:) um Gross/Kleinschreibung ignorieren
+dny_gen = ["(?i)" + i for i in dny_keyw]  # Assemblierung mit (?:) um Gross/Kleinschreibung ignorieren
 
 
 class GaragecrawlSpider(CrawlSpider):
